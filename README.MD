@@ -34,13 +34,17 @@ The frontend is intended as a demonstration of the basics of the API. On load, a
 ## Running locally
 
 If you would like to run the node backend locally, you will need to navigate to the root of the project and run 
+
 ```
 npm install
 ```
+
 This will install the prerequisite packages, you can then run
+
 ```
 nodemon server.js
 ````
+
 Your local server should automatically connect (and authenticate to) the pre-existing MongoDB on MongoAtlas, using the disposable credentials hard coded into the source code. It will likely be listening on LocalHost:4000, but the port will be reported to the console. Obviously, in the real world, this would be handled by environment variables, but for simplicity they are there.
 
 If you want to connect to a separate database, then you will need to change the mongoose URL to a known database
