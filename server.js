@@ -112,7 +112,6 @@ app.delete('/company/:id', (req, res, next) => {
 	.catch(err => {
 		next(err)
 	} )
-    
 })
 
 // Any error
