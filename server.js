@@ -4,7 +4,7 @@ var express = require('express'),
       cors = require('cors'),
       mongoose = require('mongoose');
 
-mongoose.connect("mongodb://localhost:27017/ft-db", { useNewUrlParser: true }).then(
+mongoose.connect("mongodb+srv://WendyLee:LyxYdiisJqgfSKug@ftsample-4gokh.mongodb.net/test?retryWrites=true&w=majority", { useNewUrlParser: true }).then(
           () => {console.log('Database connection is successful') },
           err => { console.log('Error when connecting to the database'+ err)}
 );
@@ -22,8 +22,31 @@ app.listen(port, ()=>{
 });
 
 const Company = require("./models/Company")
-//app.get('/', (req, res)=> res.send('Hello World!'));
-app.get('/company', (req, res) => {
+
+app.get('/companies/date', (req, res, next) => {
+	const query = req.query
+	const minDate = Number(query.minDate)
+	const maxDate = Number(query.maxDate)
+	if (!minDate || ! maxDate){
+		return res.status(400).send({ message: 'Bad formatting, must have minimum and maximum year' });
+	}
+	else{
+		Company.find({
+				yearFounded:{$gte: minDate, $lte: maxDate}
+		})
+		.then(companies => {
+			res.json({
+				confirmation: 'success',
+				data: companies
+			})
+		})
+		.catch(err=>{
+			next(err)
+		})
+	}
+})
+
+app.get('/companies', (req, res, next) => {
 	const query = req.query
 	Company.find(query)
 	.then(companies => {
@@ -33,14 +56,11 @@ app.get('/company', (req, res) => {
 		})
 	})
 	.catch(err=>{
-		res.json({
-			confirmation: 'fail',
-			message: err.message
-		})
+		next(err)
 	})
 })
 
-app.put('/company/:id', (req, res) => {
+app.put('/company/:id', (req, res, next) => {
     Company.findById(req.params.id)
     .then(company => {
 		company.name = req.body.name || company.name
@@ -53,12 +73,11 @@ app.put('/company/:id', (req, res) => {
         })
     })
     .catch(err=>{
-        res.status(400).send("Error when updating the company");
+        next(err)
     })
-    
 })
 
-app.get('/company/:id', (req, res) =>{
+app.get('/company/:id', (req, res, next) => {
 	const id = req.params.id;
 	Company.findById(id)
 	.then(company => {
@@ -68,37 +87,43 @@ app.get('/company/:id', (req, res) =>{
 		})
 	})
 	.catch(err=>{
-		res.json({
-			confirmation: 'fail',
-			message: "Company " + id + " not found"
-		})
+		next(err)
 	})
 })
 
-app.post('/company', (req, res)=>{
+app.post('/company', (req, res, next) => {
 	  Company.create(req.body)
 	  .then(company=>{
-		res.json({
+		res.status(204).json({
 			confirmation: 'success',
 			data: company
 		})
 	  })
 	  .catch(err=> {
-		res.json({
-			confirmation: 'fail',
-			message: err.message
-		})
+		next(err)
 	  })
 	});
 
-app.delete('/company/:id', (req, res) => {
+app.delete('/company/:id', (req, res, next) => {
     Company.findByIdAndRemove({_id: req.params.id})
     .then(()=>{
         res.json('Company successfully removed');
-    })
-    .catch(err=>{
-        res.json(err);
-    })
+	})
+	.catch(err => {
+		next(err)
+	} )
+    
 })
 
+// Any error
+app.use(function(err, req, res, next) {
+	if (!err){
+		return res.status(404).send({ message: 'Page Not found.' });
+	}
+	else{
+		return res.status(500).send({ error: err });
+	}
+});
+
 module.exports = app
+ 
