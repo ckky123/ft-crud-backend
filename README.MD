@@ -8,9 +8,9 @@ There is also a (very basic) frontend at https://ft-frontend.herokuapp.com/ whic
 ## The Records
 
 Objects are stored in a MongoDB database with the following elements: 
-* name: The company name, 
-* yearFounded: The year the company was founded
-* revenue: Annual revenue, nominally in Dollars
+name: The company name, 
+yearFounded: The year the company was founded
+revenue: Annual revenue, nominally in Dollars
 
 Records also have a unique ID, auto-generated when they are first inserted into the database. This ID is the primary method for users to interact with the database
 
